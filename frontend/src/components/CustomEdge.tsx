@@ -1,5 +1,8 @@
 import { memo } from 'react';
+
 import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath, useInternalNode } from '@xyflow/react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { getEdgeParams } from '../utils/edgeUtils';
 
 export const CustomEdge = memo(({
@@ -59,7 +62,7 @@ export const CustomEdge = memo(({
                             
                             {!!data.comment && (
                                 <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 w-48 p-2 bg-panel border border-border rounded-lg shadow-xl text-xs text-textMain whitespace-pre-wrap break-words text-center" style={{ wordBreak: 'break-word' }}>
-                                    {data.comment as string}
+                                    <div className="prose prose-xs dark:prose-invert prose-p:leading-tight max-w-none text-left"><ReactMarkdown remarkPlugins={[remarkGfm]}>{data.comment as string}</ReactMarkdown></div>
                                     <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-panel border-b border-r border-border rotate-45"></div>
                                 </div>
                             )}
@@ -70,3 +73,5 @@ export const CustomEdge = memo(({
         </>
     );
 });
+
+
