@@ -1,0 +1,55 @@
+{
+  "id": "graph_1790432800152",
+  "name": "Психология",
+  "updatedAt": 1790432914561,
+  "createdAt": 1790432800185,
+  "globalEdges": [
+    {
+      "source": "Нейробиология",
+      "sign": "none",
+      "dir": "->",
+      "target": "Психика",
+      "label": "",
+      "comment": "",
+      "context": "root"
+    },
+    {
+      "source": "Внешняя среда",
+      "sign": "none",
+      "dir": "->",
+      "target": "Психика",
+      "label": "",
+      "comment": "",
+      "context": "root"
+    },
+    {
+      "source": "Психика",
+      "sign": "none",
+      "dir": "->",
+      "target": "Поведение",
+      "label": "",
+      "comment": "",
+      "context": "root"
+    },
+    {
+      "source": "Питание",
+      "sign": "none",
+      "dir": "->",
+      "target": "Нейромедиаторы",
+      "label": "",
+      "comment": "",
+      "context": "Нейробиология"
+    },
+    {
+      "source": "Внешняя среда",
+      "sign": "none",
+      "dir": "->",
+      "target": "подавление/стимуляция",
+      "label": "",
+      "comment": "",
+      "context": "Нейромедиаторы"
+    }
+  ],
+  "globalNodes": {},
+  "globalEdgeProps": {}
+}

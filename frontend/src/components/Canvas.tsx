@@ -67,7 +67,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 export function Canvas() {
-    const { globalEdges, globalNodes, globalEdgeProps, currentContext, setContext, isDark, updateNodeProps, updateEdgeProps, layoutDirection, setLayoutDirection, currentGraphName } = useStore();
+    const { globalEdges, globalNodes, globalEdgeProps, currentContext, isDark, updateNodeProps, updateEdgeProps, layoutDirection, setLayoutDirection, currentGraphName, contextPath, setContextPath } = useStore();
     const { undo, redo, pastStates, futureStates } = useZustandStore(useStore.temporal, (state: any) => state);
     const { fitView } = useReactFlow();
 
@@ -275,18 +275,17 @@ export function Canvas() {
                     <span className="text-sm font-bold text-blue-500 mr-2 flex items-center gap-1 border-r border-border pr-3">
                         {currentGraphName || 'Untitled'}
                     </span>
-                    <button 
-                        onClick={() => setContext('root')} 
-                        className="flex items-center gap-1 text-sm font-medium hover:text-blue-500 transition-colors text-textMain"
-                    >
-                        <Home size={16} /> Root
-                    </button>
-                    {currentContext !== 'root' && (
-                        <>
-                            <ChevronRight size={16} className="text-textMuted" />
-                            <span className="text-sm font-bold">{currentContext}</span>
-                        </>
-                    )}
+                    {contextPath.map((ctx, idx) => (
+                        <div key={idx} className="flex items-center gap-1">
+                            {idx > 0 && <ChevronRight size={16} className="text-textMuted" />}
+                            <button
+                                onClick={() => setContextPath(contextPath.slice(0, idx + 1))}
+                                className={`flex items-center gap-1 text-sm transition-colors ${idx === contextPath.length - 1 ? 'font-bold text-textMain' : 'font-medium text-textMuted hover:text-blue-500'}`}
+                            >
+                                {idx === 0 ? <><Home size={16} /> Root</> : ctx}
+                            </button>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="flex items-center gap-1 bg-panel px-2 py-2 rounded-lg border border-border shadow-sm">
@@ -454,6 +453,9 @@ export function Canvas() {
         </div>
     );
 }
+
+
+
 
 
 

@@ -74,7 +74,7 @@ Delay, -, ->, Happiness, ,`
     };
 
     const currentTableEdges = globalEdges.filter(e => e.context === currentContext);
-    const allNodes = Array.from(new Set(globalEdges.flatMap(e => [e.source, e.target]).filter(Boolean)));
+    const allNodes = Array.from(new Set(currentTableEdges.flatMap(e => [e.source, e.target]).filter(Boolean)));
 
     const updateTableEdge = (index: number, field: keyof GraphEdge, value: string) => {
         const edgesInCtx = [...currentTableEdges];
@@ -257,3 +257,4 @@ Delay, -, ->, Happiness, ,`
         </div>
     );
 }
+

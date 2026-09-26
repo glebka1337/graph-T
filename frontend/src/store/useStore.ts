@@ -15,6 +15,8 @@ interface AppState {
     currentGraphName: string | null;
     setCurrentGraph: (id: string | null, name: string | null) => void;
     currentContext: string;
+    contextPath: string[];
+    setContextPath: (path: string[]) => void;
     isDark: boolean;
     layoutDirection: 'TB' | 'LR';
     setLayoutDirection: (dir: 'TB' | 'LR') => void;
@@ -40,6 +42,7 @@ export const useStore = create<AppState>()(
                 currentGraphName: null,
                 setCurrentGraph: (id, name) => set({ currentGraphId: id, currentGraphName: name }),
                 currentContext: 'root',
+                contextPath: ['root'],
                 isDark: true,
                 layoutDirection: 'TB',
 
@@ -51,6 +54,7 @@ export const useStore = create<AppState>()(
             },
             
             setContext: (ctx) => set({ currentContext: ctx }),
+            setContextPath: (path) => set({ contextPath: path, currentContext: path[path.length - 1] }),
             
             updateGlobalEdges: (edges) => set({ globalEdges: edges }),
 
@@ -158,3 +162,4 @@ export const useStore = create<AppState>()(
         limit: 50,
     }
 ));
+

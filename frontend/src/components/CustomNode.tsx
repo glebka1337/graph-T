@@ -7,11 +7,12 @@ import clsx from 'clsx';
 import { useStore } from '../store/useStore';
 
 export const CustomNode = memo(({ id, data, selected }: NodeProps) => {
-    const setContext = useStore(s => s.setContext);
+    const setContextPath = useStore(s => s.setContextPath);
+    const contextPath = useStore(s => s.contextPath);
     const typedData = data as any;
 
     const onDoubleClick = () => {
-        setContext(id);
+        setContextPath([...contextPath, id]);
     };
 
     return (
@@ -55,5 +56,6 @@ export const CustomNode = memo(({ id, data, selected }: NodeProps) => {
         </div>
     );
 });
+
 
 
