@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useStore } from '../store/useStore';
-import { Plus, Trash2, Check, X, File, RefreshCw, Save } from 'lucide-react';
+import { Download, Upload, Plus, Trash2, Check, X, File, RefreshCw, Save } from 'lucide-react';
 
 export function ProjectsPanel() {
     const { 
@@ -21,6 +21,42 @@ export function ProjectsPanel() {
 
     // Auto-save ref
     const saveTimeoutRef = useRef<any>(null);
+
+    const backupInputRef = useRef<HTMLInputElement>(null);
+
+    const handleExportBackup = async () => {
+        try {
+            const res = await fetch('http://localhost:3001/api/backup');
+            const data = await res.json();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'graph_t_backup.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error('Export failed', e);
+        }
+    };
+
+    const handleImportBackup = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            await fetch('http://localhost:3001/api/restore', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            loadGraphs();
+        } catch (error) {
+            console.error('Import failed', error);
+        }
+        if (backupInputRef.current) backupInputRef.current.value = '';
+    };
 
     const loadGraphs = async () => {
         try {
@@ -235,7 +271,22 @@ export function ProjectsPanel() {
                     })}
                 </div>
             )}
+            
+            <div className="mt-auto pt-6 pb-2">
+                <div className="flex gap-2">
+                    <button onClick={() => backupInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-1.5 bg-panel border border-border hover:bg-border text-textMain rounded-md py-2 text-xs font-medium transition-colors">
+                        <Upload size={14} /> Import All
+                    </button>
+                    <input type="file" ref={backupInputRef} onChange={handleImportBackup} accept=".json" className="hidden" />
+                    
+                    <button onClick={handleExportBackup} className="flex-1 flex items-center justify-center gap-1.5 bg-panel border border-border hover:bg-border text-textMain rounded-md py-2 text-xs font-medium transition-colors">
+                        <Download size={14} /> Export All
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }
+
+
 

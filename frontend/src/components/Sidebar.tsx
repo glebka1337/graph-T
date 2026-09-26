@@ -43,14 +43,6 @@ Delay, -, ->, Happiness, ,`
         };
     }, []);
 
-    const handleTextRender = () => {
-        if (mode === 'projects') {
-            parseRawText(rawText);
-        } else {
-            setRawText(getRawText());
-        }
-    };
-
     const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -190,6 +182,18 @@ Delay, -, ->, Happiness, ,`
 
                 {mode === 'table' && (
                     <div className="absolute inset-0 overflow-y-auto p-4 bg-bg">
+                        <div className="flex justify-between items-center mb-4">
+                            <span className="text-xs font-bold text-textMuted uppercase tracking-wide">Connections</span>
+                            <div className="flex gap-2">
+                                <button onClick={() => fileInputRef.current?.click()} className="p-1.5 bg-panel border border-border rounded text-textMuted hover:text-textMain hover:bg-border transition-colors shadow-sm" title="Import CSV">
+                                    <Upload size={14} />
+                                </button>
+                                <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv,.txt" className="hidden" />
+                                <button onClick={() => handleExport('csv')} className="p-1.5 bg-panel border border-border rounded text-textMuted hover:text-textMain hover:bg-border transition-colors shadow-sm" title="Export CSV">
+                                    <Download size={14} />
+                                </button>
+                            </div>
+                        </div>
                         {currentTableEdges.map((edge, i) => (
                             <div key={i} className="bg-panel border border-border rounded-lg p-3 mb-3 shadow-sm transition-all focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
                                 <div className="flex gap-2 mb-2">
@@ -250,25 +254,6 @@ Delay, -, ->, Happiness, ,`
                     </div>
                 )}
             </div>
-
-            <div className="p-4 border-t border-border bg-panel">
-                <div className="flex gap-2 mb-2">
-                    <button onClick={() => fileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-2 bg-bg border border-border rounded-md py-2 text-sm font-medium hover:bg-border transition-colors text-textMain">
-                        <Upload size={16} /> Import
-                    </button>
-                    <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv,.txt" className="hidden" />
-                    <button onClick={handleTextRender} className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md py-2 text-sm font-medium transition-colors">
-                        Render Graph
-                    </button>
-                </div>
-                <div className="flex gap-2">
-                    <button onClick={() => handleExport('csv')} className="flex-1 flex items-center justify-center gap-2 bg-bg border border-border rounded-md py-2 text-sm font-medium hover:bg-border transition-colors text-textMain">
-                        <Download size={16} /> Save CSV
-                    </button>
-                </div>
-            </div>
         </div>
     );
 }
-
-

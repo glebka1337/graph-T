@@ -102,6 +102,48 @@ app.delete('/api/graphs/:id', async (req, res) => {
     }
 });
 
+
+// GET all data for backup
+app.get('/api/backup', async (req, res) => {
+    try {
+        const graphs = await getAllGraphs();
+        res.json(graphs);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// POST restore all data
+app.post('/api/restore', async (req, res) => {
+    try {
+        const graphs = req.body;
+        if (!Array.isArray(graphs)) {
+            return res.status(400).json({ error: 'Expected array of graphs' });
+        }
+        
+        // Wipe existing
+        const files = await fs.readdir(DATA_DIR);
+        for (const file of files) {
+            if (file.endsWith('.json')) {
+                await fs.unlink(path.join(DATA_DIR, file));
+            }
+        }
+        
+        // Write new
+        for (const graph of graphs) {
+            if (graph.id && graph.name) {
+                const file = path.join(DATA_DIR, graph.id + '.json');
+                await fs.writeFile(file, JSON.stringify(graph, null, 2));
+            }
+        }
+        
+        res.json({ success: true, count: graphs.length });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.listen(3001, () => {
     console.log('Backend running on port 3001');
 });
+
