@@ -40,7 +40,7 @@ export const useStore = create<AppState>()(
                 globalEdgeProps: {},
                 currentGraphId: null,
                 currentGraphName: null,
-                setCurrentGraph: (id, name) => set({ currentGraphId: id, currentGraphName: name }),
+                setCurrentGraph: (id, name) => set({ currentGraphId: id, currentGraphName: name, contextPath: ['root'], currentContext: 'root' }),
                 currentContext: 'root',
                 contextPath: ['root'],
                 isDark: true,
@@ -162,4 +162,5 @@ export const useStore = create<AppState>()(
         limit: 50,
     }
 ));
+
 

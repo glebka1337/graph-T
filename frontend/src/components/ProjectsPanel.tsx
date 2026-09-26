@@ -26,7 +26,7 @@ export function ProjectsPanel() {
 
     const handleExportBackup = async () => {
         try {
-            const res = await fetch('http://localhost:3001/api/backup');
+            const res = await fetch('/api/backup');
             const data = await res.json();
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -46,7 +46,7 @@ export function ProjectsPanel() {
         try {
             const text = await file.text();
             const data = JSON.parse(text);
-            await fetch('http://localhost:3001/api/restore', {
+            await fetch('/api/restore', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -61,7 +61,7 @@ export function ProjectsPanel() {
     const loadGraphs = async () => {
         try {
             setLoading(true);
-            const res = await fetch('http://localhost:3001/api/graphs');
+            const res = await fetch('/api/graphs');
             const data = await res.json();
             setGraphs(data);
         } catch (e) {
@@ -83,7 +83,7 @@ export function ProjectsPanel() {
         
         saveTimeoutRef.current = setTimeout(async () => {
             try {
-                await fetch('http://localhost:3001/api/graphs', {
+                await fetch('/api/graphs', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -107,7 +107,7 @@ export function ProjectsPanel() {
         setNewError('');
         const id = 'graph_' + Date.now();
         try {
-            const res = await fetch('http://localhost:3001/api/graphs', {
+            const res = await fetch('/api/graphs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -129,7 +129,7 @@ export function ProjectsPanel() {
             
             if (!withCurrentState) {
                 updateGlobalEdges([]);
-                useStore.setState({ globalNodes: {}, globalEdgeProps: {}, currentContext: 'root' });
+                useStore.setState({ globalNodes: {}, globalEdgeProps: {}, currentContext: 'root', contextPath: ['root'] });
             }
             
             setIsCreating(false);
@@ -144,14 +144,14 @@ export function ProjectsPanel() {
     const loadGraph = async (id: string, name: string) => {
         if (id === currentGraphId) return;
         try {
-            const res = await fetch('http://localhost:3001/api/graphs/' + id);
+            const res = await fetch('/api/graphs/' + id);
             const data = await res.json();
             setCurrentGraph(id, name);
             updateGlobalEdges(data.globalEdges || []);
             useStore.setState({ 
                 globalNodes: data.globalNodes || {}, 
                 globalEdgeProps: data.globalEdgeProps || {},
-                currentContext: 'root'
+                currentContext: 'root', contextPath: ['root']
             });
         } catch (e) {
             console.error('Failed to load graph', e);
@@ -160,11 +160,11 @@ export function ProjectsPanel() {
 
     const deleteGraph = async (id: string) => {
         try {
-            await fetch('http://localhost:3001/api/graphs/' + id, { method: 'DELETE' });
+            await fetch('/api/graphs/' + id, { method: 'DELETE' });
             if (id === currentGraphId) {
                 setCurrentGraph(null, null);
                 updateGlobalEdges([]);
-                useStore.setState({ globalNodes: {}, globalEdgeProps: {}, currentContext: 'root' });
+                useStore.setState({ globalNodes: {}, globalEdgeProps: {}, currentContext: 'root', contextPath: ['root'] });
             }
             loadGraphs();
         } catch (e) {
@@ -287,6 +287,8 @@ export function ProjectsPanel() {
         </div>
     );
 }
+
+
 
 
 

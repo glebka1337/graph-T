@@ -143,7 +143,12 @@ app.post('/api/restore', async (req, res) => {
     }
 });
 
-app.listen(3001, () => {
-    console.log('Backend running on port 3001');
+
+// Serve static frontend files in production
+const distPath = path.join(__dirname, '../frontend/dist');
+app.use(express.static(distPath));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
 });
 
+app.listen(3001, () => {
