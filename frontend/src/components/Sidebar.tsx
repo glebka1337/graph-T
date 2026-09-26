@@ -203,8 +203,9 @@ Delay, -, ->, Happiness, ,`
                                     />
                                     <button
                                         onClick={() => updateTableEdge(i, 'dir', edge.dir === '->' ? '<-' : edge.dir === '<-' ? '<->' : edge.dir === '<->' ? '-' : '->')}
+                                        onKeyDown={(e) => handleKeyDown(e, i)}
                                         className="tab-focusable w-10 h-[34px] flex items-center justify-center rounded border border-border bg-bg text-textMain text-sm font-bold transition-colors hover:border-gray-400 shrink-0"
-                                        title="Direction"
+                                        title="Direction (Space to toggle)"
                                     >
                                         {edge.dir === '->' ? '→' : edge.dir === '<-' ? '←' : edge.dir === '<->' ? '↔' : '—'}
                                     </button>
