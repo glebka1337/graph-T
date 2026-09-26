@@ -21,7 +21,7 @@ import {
 } from '@xyflow/react';
 import dagre from 'dagre';
 import { useStore } from '../store/useStore';
-import { Undo2, Redo2, GitMerge, MousePointer2, Hand } from 'lucide-react';
+import { Undo2, Redo2, GitMerge, MousePointer2, Hand, WandSparkles } from 'lucide-react';
 import { CustomNode } from './CustomNode';
 import { CustomEdge } from './CustomEdge';
 import { ChevronRight, Home, X, Palette, AlignLeft } from 'lucide-react';
@@ -202,6 +202,21 @@ export function Canvas() {
     const onNodesChange = useCallback((changes: NodeChange<Node>[]) => setNodes((nds) => applyNodeChanges(changes, nds) as Node[]), []);
     const onEdgesChange = useCallback((changes: EdgeChange<Edge>[]) => setEdges((eds) => applyEdgeChanges(changes, eds) as Edge[]), []);
 
+    const forceLayout = () => {
+        const initialNodes = Array.from(nodes);
+        const flowEdges = Array.from(edges);
+        if (initialNodes.length > 0) {
+            const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+                initialNodes,
+                flowEdges,
+                layoutDirection
+            );
+            setNodes([...layoutedNodes]);
+            setEdges([...layoutedEdges]);
+            setTimeout(() => fitView({ duration: 800 }), 50);
+        }
+    };
+
     const [inspectedElement, setInspectedElement] = useState<{type: 'node' | 'edge', id: string} | null>(null);
     const [isSelectMode, setIsSelectMode] = useState(false);
 
@@ -308,6 +323,17 @@ export function Canvas() {
                         <GitMerge size={16} className={layoutDirection === 'LR' ? 'rotate-90' : ''} />
                         {layoutDirection === 'TB' ? 'Vertical' : 'Horizontal'}
                     </button>
+
+                    <div className="w-[1px] h-4 bg-border mx-1"></div>
+
+                    <button 
+                        onClick={forceLayout}
+                        className="p-1 rounded text-textMuted hover:text-textMain hover:bg-bg transition-colors flex items-center gap-1 text-xs font-medium text-blue-500 hover:text-blue-400"
+                        title="Auto Align Graph"
+                    >
+                        <WandSparkles size={16} />
+                        Align
+                    </button>
                 </div>
             </div>
 
@@ -401,6 +427,7 @@ export function Canvas() {
         </div>
     );
 }
+
 
 
 

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { AutocompleteInput } from './AutocompleteInput';
+import { ProjectsPanel } from './ProjectsPanel';
 import { Download, Upload, Plus, X, AlignLeft } from 'lucide-react';
 import clsx from 'clsx';
 import { GraphEdge } from '../types';
@@ -43,7 +44,7 @@ Delay, -, ->, Happiness, ,`
     }, []);
 
     const handleTextRender = () => {
-        if (mode === 'text') {
+        if (mode === 'projects') {
             parseRawText(rawText);
         } else {
             setRawText(getRawText());
@@ -108,11 +109,23 @@ Delay, -, ->, Happiness, ,`
         updateGlobalEdges([...newGlobalEdges, ...edgesInCtx]);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>, index: number) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            if (index === currentTableEdges.length - 1) {
+            const target = e.currentTarget as HTMLElement;
+            const focusables = Array.from(document.querySelectorAll('.tab-focusable')) as HTMLElement[];
+            const currentIndex = focusables.indexOf(target);
+            
+            if (currentIndex > -1 && currentIndex < focusables.length - 1) {
+                focusables[currentIndex + 1].focus();
+            } else if (index === currentTableEdges.length - 1) {
                 addTableRow();
+                setTimeout(() => {
+                    const newFocusables = Array.from(document.querySelectorAll('.tab-focusable')) as HTMLElement[];
+                    if (newFocusables[currentIndex + 1]) {
+                        newFocusables[currentIndex + 1].focus();
+                    }
+                }, 50);
             }
         }
     };
@@ -152,12 +165,12 @@ Delay, -, ->, Happiness, ,`
             <div className="p-4 bg-bg border-b border-border flex gap-2">
                 <button 
                     onClick={() => {
-                        setMode('text');
+                        setMode('projects');
                         setRawText(getRawText());
                     }} 
-                    className={clsx("flex-1 py-1.5 px-3 rounded-md text-sm font-medium transition-colors", mode === 'text' ? 'bg-panel shadow text-textMain' : 'text-textMuted hover:text-textMain')}
+                    className={clsx("flex-1 py-1.5 px-3 rounded-md text-sm font-medium transition-colors", mode === 'projects' ? 'bg-panel shadow text-textMain' : 'text-textMuted hover:text-textMain')}
                 >
-                    Raw Text
+                    Projects
                 </button>
                 <button 
                     onClick={() => {
@@ -171,7 +184,7 @@ Delay, -, ->, Happiness, ,`
             </div>
 
             <div className="flex-1 flex flex-col overflow-hidden relative">
-                {mode === 'text' && (
+                {mode === 'projects' && (
                     <div className="absolute inset-0 flex flex-col p-4 bg-panel">
                         <p className="text-sm text-textMuted mb-2">Format: <code>Source | Sign | Dir | Target | Label | Comment</code></p>
                         <textarea 
@@ -194,11 +207,11 @@ Delay, -, ->, Happiness, ,`
                                         onChange={(val) => updateTableEdge(i, 'source', val)} 
                                         onKeyDown={(e) => handleKeyDown(e, i)}
                                         options={allNodes}
-                                        className="bg-bg border border-border rounded px-2 py-1.5 text-sm outline-none text-textMain focus:border-blue-500 transition-colors"
+                                        className="tab-focusable bg-bg border border-border rounded px-2 py-1.5 text-sm outline-none text-textMain focus:border-blue-500 transition-colors"
                                     />
                                     <button
                                         onClick={() => updateTableEdge(i, 'dir', edge.dir === '->' ? '<-' : edge.dir === '<-' ? '<->' : edge.dir === '<->' ? '-' : '->')}
-                                        className="w-10 h-[34px] flex items-center justify-center rounded border border-border bg-bg text-textMain text-sm font-bold transition-colors hover:border-gray-400"
+                                        className="tab-focusable w-10 h-[34px] flex items-center justify-center rounded border border-border bg-bg text-textMain text-sm font-bold transition-colors hover:border-gray-400 shrink-0"
                                         title="Direction"
                                     >
                                         {edge.dir === '->' ? '→' : edge.dir === '<-' ? '←' : edge.dir === '<->' ? '↔' : '—'}
@@ -209,7 +222,7 @@ Delay, -, ->, Happiness, ,`
                                         onChange={(val) => updateTableEdge(i, 'target', val)}
                                         onKeyDown={(e) => handleKeyDown(e, i)}
                                         options={allNodes}
-                                        className="bg-bg border border-border rounded px-2 py-1.5 text-sm outline-none text-textMain focus:border-blue-500 transition-colors"
+                                        className="tab-focusable bg-bg border border-border rounded px-2 py-1.5 text-sm outline-none text-textMain focus:border-blue-500 transition-colors"
                                     />
                                 </div>
                                 <div className="flex gap-2 items-center">
@@ -219,7 +232,7 @@ Delay, -, ->, Happiness, ,`
                                         value={edge.label} 
                                         onChange={(e) => updateTableEdge(i, 'label', e.target.value)}
                                         onKeyDown={(e) => handleKeyDown(e, i)}
-                                        className="w-24 bg-bg border border-border rounded px-2 py-1 text-xs outline-none text-textMain"
+                                        className="tab-focusable w-24 bg-bg border border-border rounded px-2 py-1 text-xs outline-none text-textMain"
                                     />
                                     <input 
                                         type="text" 
@@ -227,7 +240,7 @@ Delay, -, ->, Happiness, ,`
                                         value={edge.comment} 
                                         onChange={(e) => updateTableEdge(i, 'comment', e.target.value)}
                                         onKeyDown={(e) => handleKeyDown(e, i)}
-                                        className="flex-1 bg-bg border border-border rounded px-2 py-1 text-xs outline-none text-textMain"
+                                        className="tab-focusable flex-1 bg-bg border border-border rounded px-2 py-1 text-xs outline-none text-textMain"
                                     />
                                     <button onClick={() => deleteTableRow(i)} className="p-1 text-textMuted hover:text-minus rounded hover:bg-bg transition-colors">
                                         <X size={16} />
@@ -264,3 +277,5 @@ Delay, -, ->, Happiness, ,`
         </div>
     );
 }
+
+
