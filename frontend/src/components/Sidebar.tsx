@@ -7,8 +7,8 @@ import clsx from 'clsx';
 import { GraphEdge } from '../types';
 
 export function Sidebar() {
-    const { globalEdges, currentContext, parseRawText, getRawText, updateGlobalEdges } = useStore();
-    const [mode, setMode] = useState<'projects' | 'table'>('table');
+    const { globalEdges, currentContext, parseRawText, getRawText, updateGlobalEdges, currentGraphId } = useStore();
+    const [mode, setMode] = useState<'projects' | 'table'>(currentGraphId ? 'table' : 'projects');
     const [collapsed, setCollapsed] = useState(false);
     const [width, setWidth] = useState(450);
     const [rawText, setRawText] = useState(

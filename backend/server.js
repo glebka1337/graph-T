@@ -9,7 +9,6 @@ app.use(express.json({ limit: '50mb' }));
 
 const DATA_DIR = path.join(__dirname, 'data', 'graphs');
 
-// Ensure data directory exists
 async function ensureDir() {
     try {
         await fs.mkdir(DATA_DIR, { recursive: true });
@@ -19,29 +18,32 @@ async function ensureDir() {
 }
 ensureDir();
 
-// GET all graphs
-app.get('/api/graphs', async (req, res) => {
+async function getAllGraphs() {
     try {
         const files = await fs.readdir(DATA_DIR);
         const graphs = [];
         for (const file of files) {
             if (file.endsWith('.json')) {
                 const content = await fs.readFile(path.join(DATA_DIR, file), 'utf8');
-                const data = JSON.parse(content);
-                graphs.push({
-                    id: data.id,
-                    name: data.name,
-                    updatedAt: data.updatedAt
-                });
+                graphs.push(JSON.parse(content));
             }
         }
-        res.json(graphs.sort((a, b) => b.updatedAt - a.updatedAt));
+        return graphs;
+    } catch (e) {
+        return [];
+    }
+}
+
+app.get('/api/graphs', async (req, res) => {
+    try {
+        const graphs = await getAllGraphs();
+        const summaries = graphs.map(g => ({ id: g.id, name: g.name, updatedAt: g.updatedAt }));
+        res.json(summaries.sort((a, b) => b.updatedAt - a.updatedAt));
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// GET single graph
 app.get('/api/graphs/:id', async (req, res) => {
     try {
         const file = path.join(DATA_DIR, req.params.id + '.json');
@@ -52,30 +54,44 @@ app.get('/api/graphs/:id', async (req, res) => {
     }
 });
 
-// POST save graph
 app.post('/api/graphs', async (req, res) => {
     try {
         const { id, name, globalEdges, globalNodes, globalEdgeProps } = req.body;
         if (!id) return res.status(400).json({ error: 'Missing ID' });
         
+        const allGraphs = await getAllGraphs();
+        const existingName = allGraphs.find(g => g.name.toLowerCase() === name.toLowerCase() && g.id !== id);
+        
+        if (existingName) {
+            return res.status(400).json({ error: 'Graph with this name already exists.' });
+        }
+        
+        const file = path.join(DATA_DIR, id + '.json');
+        
+        // Check if updating existing to preserve created time
+        let existingData = null;
+        try {
+            const content = await fs.readFile(file, 'utf8');
+            existingData = JSON.parse(content);
+        } catch (e) {}
+
         const graphData = {
             id,
             name: name || 'Untitled Graph',
             updatedAt: Date.now(),
-            globalEdges,
-            globalNodes,
-            globalEdgeProps
+            createdAt: existingData?.createdAt || Date.now(),
+            globalEdges: globalEdges || [],
+            globalNodes: globalNodes || {},
+            globalEdgeProps: globalEdgeProps || {}
         };
         
-        const file = path.join(DATA_DIR, id + '.json');
         await fs.writeFile(file, JSON.stringify(graphData, null, 2));
-        res.json({ success: true, id });
+        res.json({ success: true, graph: graphData });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// DELETE graph
 app.delete('/api/graphs/:id', async (req, res) => {
     try {
         const file = path.join(DATA_DIR, req.params.id + '.json');

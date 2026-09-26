@@ -11,6 +11,9 @@ interface AppState {
     globalEdges: GraphEdge[];
     globalNodes: Record<string, NodePropsType>;
     globalEdgeProps: Record<string, EdgePropsType>;
+    currentGraphId: string | null;
+    currentGraphName: string | null;
+    setCurrentGraph: (id: string | null, name: string | null) => void;
     currentContext: string;
     isDark: boolean;
     layoutDirection: 'TB' | 'LR';
@@ -33,6 +36,9 @@ export const useStore = create<AppState>()(
                 globalEdges: [],
                 globalNodes: {},
                 globalEdgeProps: {},
+                currentGraphId: null,
+                currentGraphName: null,
+                setCurrentGraph: (id, name) => set({ currentGraphId: id, currentGraphName: name }),
                 currentContext: 'root',
                 isDark: true,
                 layoutDirection: 'TB',
@@ -137,6 +143,8 @@ export const useStore = create<AppState>()(
                 globalEdges: state.globalEdges,
                 globalNodes: state.globalNodes,
                 globalEdgeProps: state.globalEdgeProps,
+                currentGraphId: state.currentGraphId,
+                currentGraphName: state.currentGraphName,
                 isDark: state.isDark,
                 layoutDirection: state.layoutDirection
             })

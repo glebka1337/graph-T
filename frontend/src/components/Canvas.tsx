@@ -60,7 +60,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 export function Canvas() {
-    const { globalEdges, globalNodes, globalEdgeProps, currentContext, setContext, isDark, updateNodeProps, updateEdgeProps, layoutDirection, setLayoutDirection } = useStore();
+    const { globalEdges, globalNodes, globalEdgeProps, currentContext, setContext, isDark, updateNodeProps, updateEdgeProps, layoutDirection, setLayoutDirection, currentGraphName } = useStore();
     const { undo, redo, pastStates, futureStates } = useZustandStore(useStore.temporal, (state: any) => state);
     const { fitView } = useReactFlow();
 
@@ -264,9 +264,12 @@ export function Canvas() {
         <div className="flex-1 relative bg-bg h-full">
             <div className="absolute top-4 left-4 z-10 flex items-center gap-4">
                 <div className="flex items-center gap-2 bg-panel px-4 py-2 rounded-lg border border-border shadow-sm">
+                    <span className="text-sm font-bold text-blue-500 mr-2 flex items-center gap-1 border-r border-border pr-3">
+                        {currentGraphName || 'Untitled'}
+                    </span>
                     <button 
                         onClick={() => setContext('root')} 
-                        className="flex items-center gap-1 text-sm font-medium hover:text-blue-500 transition-colors"
+                        className="flex items-center gap-1 text-sm font-medium hover:text-blue-500 transition-colors text-textMain"
                     >
                         <Home size={16} /> Root
                     </button>
