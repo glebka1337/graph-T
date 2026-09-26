@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import { NodeProps } from '@xyflow/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -10,14 +10,25 @@ export const CustomNote = memo(({ id, data, selected }: NodeProps) => {
     const { updateNodeProps } = useStore();
     const typedData = data as any;
     const [isEditing, setIsEditing] = useState(false);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [localText, setLocalText] = useState(typedData.text || '');
+    const [localTitle, setLocalTitle] = useState(typedData.title || 'Note');
+    const titleInputRef = useRef<HTMLInputElement>(null);
+
+    const color = typedData.color || '#eab308';
+    const bgAlpha = color + '20'; // append 20 for hex opacity
+
+    useEffect(() => {
+        if (isEditingTitle) {
+            titleInputRef.current?.focus();
+        }
+    }, [isEditingTitle]);
 
     const toggleCollapse = () => {
         updateNodeProps(id, { isCollapsed: !typedData.isCollapsed });
     };
 
     const handleDelete = () => {
-        // We can just set isNote to false or delete it. For now, setting isNote to false hides it.
         updateNodeProps(id, { isNote: false });
     };
 
@@ -26,27 +37,61 @@ export const CustomNote = memo(({ id, data, selected }: NodeProps) => {
         updateNodeProps(id, { text: localText });
     };
 
+    const saveTitle = () => {
+        setIsEditingTitle(false);
+        updateNodeProps(id, { title: localTitle });
+    };
+
     return (
-        <div className={clsx(
-            "rounded-lg border-2 bg-panel transition-all shadow-sm flex flex-col min-w-[200px] max-w-[400px]",
-            selected ? "border-yellow-500 shadow-md ring-2 ring-yellow-500/20" : "border-yellow-600/50 hover:border-yellow-500"
-        )}>
-            <div className="flex items-center justify-between p-2 bg-yellow-500/10 border-b border-yellow-500/20 rounded-t-md group">
-                <button onClick={toggleCollapse} className="flex items-center gap-1 text-sm font-bold text-yellow-600 hover:text-yellow-500">
-                    {typedData.isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
-                    Note
-                </button>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div 
+            className={clsx(
+                "rounded-lg border-2 bg-panel transition-all shadow-sm flex flex-col min-w-[200px] max-w-[400px]",
+                selected ? "shadow-md ring-2 ring-offset-2 ring-offset-bg" : "hover:shadow-md"
+            )}
+            style={{ 
+                borderColor: color, 
+                '--tw-ring-color': color 
+            } as React.CSSProperties}
+        >
+            <div 
+                className="flex items-center justify-between p-2 border-b rounded-t-[6px] group"
+                style={{ backgroundColor: bgAlpha, borderBottomColor: color }}
+            >
+                <div className="flex items-center gap-1 overflow-hidden">
+                    <button onClick={toggleCollapse} className="flex-shrink-0" style={{ color: color }}>
+                        {typedData.isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                    </button>
+                    {isEditingTitle ? (
+                        <input
+                            ref={titleInputRef}
+                            value={localTitle}
+                            onChange={(e) => setLocalTitle(e.target.value)}
+                            onBlur={saveTitle}
+                            onKeyDown={(e) => e.key === 'Enter' && saveTitle()}
+                            className="bg-bg border border-border rounded px-1 text-sm font-bold text-textMain outline-none w-full min-w-0 nodrag"
+                        />
+                    ) : (
+                        <button 
+                            onDoubleClick={() => setIsEditingTitle(true)}
+                            className="text-sm font-bold truncate hover:opacity-80 transition-opacity" 
+                            style={{ color: color }}
+                            title="Double click to rename"
+                        >
+                            {typedData.title || 'Note'}
+                        </button>
+                    )}
+                </div>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-2">
                     {isEditing ? (
-                        <button onClick={saveEdit} className="p-1 hover:bg-yellow-500/20 text-yellow-600 rounded">
+                        <button onClick={saveEdit} className="p-1 rounded hover:bg-bg/50" style={{ color: color }}>
                             <Check size={14} />
                         </button>
                     ) : (
-                        <button onClick={() => { setLocalText(typedData.text || ''); setIsEditing(true); }} className="p-1 hover:bg-yellow-500/20 text-yellow-600 rounded">
+                        <button onClick={() => { setLocalText(typedData.text || ''); setIsEditing(true); }} className="p-1 rounded hover:bg-bg/50" style={{ color: color }}>
                             <Edit2 size={14} />
                         </button>
                     )}
-                    <button onClick={handleDelete} className="p-1 hover:bg-red-500/20 text-red-500 rounded">
+                    <button onClick={handleDelete} className="p-1 rounded hover:bg-red-500/20 text-red-500">
                         <Trash2 size={14} />
                     </button>
                 </div>
@@ -60,7 +105,8 @@ export const CustomNote = memo(({ id, data, selected }: NodeProps) => {
                             onChange={(e) => setLocalText(e.target.value)}
                             onBlur={saveEdit}
                             autoFocus
-                            className="w-full min-h-[100px] bg-bg border border-border rounded p-2 outline-none focus:border-yellow-500 resize-y text-textMain"
+                            className="w-full min-h-[100px] bg-bg border border-border rounded p-2 outline-none resize-y text-textMain"
+                            style={{ '--tw-ring-color': color, '&:focus': { borderColor: color } } as any}
                             placeholder="Write markdown here..."
                         />
                     ) : (

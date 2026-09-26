@@ -417,7 +417,7 @@ export function Canvas() {
                 <div className="absolute top-4 right-4 z-10 w-80 bg-panel border border-border shadow-lg rounded-lg flex flex-col overflow-hidden animate-in slide-in-from-right-8 duration-200">
                     <div className="p-3 border-b border-border flex items-center justify-between bg-bg">
                         <span className="font-bold text-sm text-textMain truncate pr-2">
-                            {inspectedNode ? inspectedNode.id : inspectedEdge?.data?.label ? inspectedEdge.data.label as string : 'Connection'}
+                            {inspectedNode ? (inspectedNode.type === 'note' ? (globalNodes[inspectedNode.id]?.title || 'Note') : inspectedNode.id) : inspectedEdge?.data?.label ? inspectedEdge.data.label as string : 'Connection'}
                         </span>
                         <button 
                             onClick={() => setInspectedElement(null)}
@@ -492,6 +492,7 @@ export function Canvas() {
         </div>
     );
 }
+
 
 
 
