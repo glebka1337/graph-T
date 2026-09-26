@@ -214,7 +214,7 @@ Delay, -, ->, Happiness, ,`
                                         {edge.dir === '->' ? '→' : edge.dir === '<-' ? '←' : edge.dir === '<->' ? '↔' : '—'}
                                     </button>
                                     <AutocompleteInput 
-                                        placeholder="To Node (Empty for Desc)" 
+                                        placeholder="To Node (Empty for Solo Node)" 
                                         value={edge.target} 
                                         onChange={(val) => updateTableEdge(i, 'target', val)}
                                         onKeyDown={(e) => handleKeyDown(e, i)}
@@ -257,4 +257,5 @@ Delay, -, ->, Happiness, ,`
         </div>
     );
 }
+
 

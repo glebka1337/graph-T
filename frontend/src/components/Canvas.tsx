@@ -86,7 +86,7 @@ export function Canvas() {
         currentEdges.forEach((edgeData, i) => {
             const { source, sign, dir, target, label, comment } = edgeData;
             
-            if (!source || !target) return;
+            if (!source) return;
 
             const hasInternalSource = globalEdges.some(e => e.context === source);
             const sourceProps = globalNodes[source] || {};
@@ -99,6 +99,8 @@ export function Canvas() {
                     data: { label: source, hasChildren: hasInternalSource, opacity: 1, ...sourceProps },
                 });
             }
+
+            if (!target) return;
 
             const hasInternalTarget = globalEdges.some(e => e.context === target);
             const targetProps = globalNodes[target] || {};
@@ -460,6 +462,7 @@ export function Canvas() {
         </div>
     );
 }
+
 
 
 

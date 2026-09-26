@@ -1,0 +1,46 @@
+{
+  "id": "graph_1790434951975",
+  "name": "Системный анализ",
+  "updatedAt": 1790434991890,
+  "createdAt": 1790434952035,
+  "globalEdges": [
+    {
+      "source": "Требования",
+      "sign": "none",
+      "dir": "->",
+      "target": "Код",
+      "label": "",
+      "comment": "",
+      "context": "root"
+    },
+    {
+      "source": "Тестирование",
+      "sign": "none",
+      "dir": "->",
+      "target": "Анализ результатов",
+      "label": "",
+      "comment": "",
+      "context": "Код"
+    },
+    {
+      "source": "Фиксация",
+      "sign": "none",
+      "dir": "->",
+      "target": "Тестирование",
+      "label": "",
+      "comment": "",
+      "context": "Код"
+    },
+    {
+      "source": "Анализ результатов",
+      "sign": "none",
+      "dir": "->",
+      "target": "Фиксация",
+      "label": "",
+      "comment": "",
+      "context": "Код"
+    }
+  ],
+  "globalNodes": {},
+  "globalEdgeProps": {}
+}
