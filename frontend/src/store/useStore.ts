@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { temporal } from 'zundo';
 import { GraphEdge } from '../types';
 import Papa from 'papaparse';
 
@@ -12,6 +13,8 @@ interface AppState {
     globalEdgeProps: Record<string, EdgePropsType>;
     currentContext: string;
     isDark: boolean;
+    layoutDirection: 'TB' | 'LR';
+    setLayoutDirection: (dir: 'TB' | 'LR') => void;
     setTheme: (dark: boolean) => void;
     setContext: (ctx: string) => void;
     updateGlobalEdges: (edges: GraphEdge[]) => void;
@@ -24,15 +27,19 @@ interface AppState {
 const cleanString = (str: string) => str.replace(/^\|?/, '').replace(/\|?$/, '').trim().replace(/^"/, '').replace(/"$/, '').trim();
 
 export const useStore = create<AppState>()(
-    persist(
-        (set, get) => ({
-            globalEdges: [],
-            globalNodes: {},
-            globalEdgeProps: {},
-            currentContext: 'root',
-            isDark: true,
-            
-            setTheme: (dark) => {
+    temporal(
+        persist(
+            (set, get) => ({
+                globalEdges: [],
+                globalNodes: {},
+                globalEdgeProps: {},
+                currentContext: 'root',
+                isDark: true,
+                layoutDirection: 'TB',
+
+                setLayoutDirection: (dir) => set({ layoutDirection: dir }),
+                
+                setTheme: (dark) => {
                 set({ isDark: dark });
                 document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
             },
@@ -130,8 +137,16 @@ export const useStore = create<AppState>()(
                 globalEdges: state.globalEdges,
                 globalNodes: state.globalNodes,
                 globalEdgeProps: state.globalEdgeProps,
-                isDark: state.isDark
+                isDark: state.isDark,
+                layoutDirection: state.layoutDirection
             })
         }
-    )
-);
+    ),
+    {
+        partialize: (state) => {
+            const { globalEdges, globalNodes, globalEdgeProps } = state;
+            return { globalEdges, globalNodes, globalEdgeProps };
+        },
+        limit: 50,
+    }
+));

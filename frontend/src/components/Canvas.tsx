@@ -1,4 +1,5 @@
 import { useEffect, useCallback, useState } from 'react';
+import { useStore as useZustandStore } from 'zustand';
 import { 
     ReactFlow, 
     useNodesState, 
@@ -14,10 +15,12 @@ import {
     applyNodeChanges,
     applyEdgeChanges,
     Position,
-    useOnSelectionChange
+    useOnSelectionChange,
+    MiniMap
 } from '@xyflow/react';
 import dagre from 'dagre';
 import { useStore } from '../store/useStore';
+import { Undo2, Redo2, GitMerge } from 'lucide-react';
 import { CustomNode } from './CustomNode';
 import { CustomEdge } from './CustomEdge';
 import { ChevronRight, Home, X, Palette, AlignLeft } from 'lucide-react';
@@ -56,7 +59,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 export function Canvas() {
-    const { globalEdges, globalNodes, globalEdgeProps, currentContext, setContext, isDark, updateNodeProps, updateEdgeProps } = useStore();
+    const { globalEdges, globalNodes, globalEdgeProps, currentContext, setContext, isDark, updateNodeProps, updateEdgeProps, layoutDirection, setLayoutDirection } = useStore();
+    const { undo, redo, pastStates, futureStates } = useZustandStore(useStore.temporal, (state: any) => state);
     const { fitView } = useReactFlow();
 
     const [nodes, setNodes] = useNodesState<Node>([]);
@@ -136,7 +140,8 @@ export function Canvas() {
         if (initialNodes.length > 0) {
             const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
                 initialNodes,
-                flowEdges
+                flowEdges,
+                layoutDirection
             );
             
             setNodes(oldNds => {
@@ -163,7 +168,7 @@ export function Canvas() {
             setNodes([]);
             setEdges([]);
         }
-    }, [globalEdges, globalNodes, globalEdgeProps, currentContext]);
+    }, [globalEdges, globalNodes, globalEdgeProps, currentContext, layoutDirection]);
 
     // Initial fitView on context change
     useEffect(() => {
@@ -240,19 +245,51 @@ export function Canvas() {
 
     return (
         <div className="flex-1 relative bg-bg h-full">
-            <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-panel px-4 py-2 rounded-lg border border-border shadow-sm">
-                <button 
-                    onClick={() => setContext('root')} 
-                    className="flex items-center gap-1 text-sm font-medium hover:text-blue-500 transition-colors"
-                >
-                    <Home size={16} /> Root
-                </button>
-                {currentContext !== 'root' && (
-                    <>
-                        <ChevronRight size={16} className="text-textMuted" />
-                        <span className="text-sm font-bold">{currentContext}</span>
-                    </>
-                )}
+            <div className="absolute top-4 left-4 z-10 flex items-center gap-4">
+                <div className="flex items-center gap-2 bg-panel px-4 py-2 rounded-lg border border-border shadow-sm">
+                    <button 
+                        onClick={() => setContext('root')} 
+                        className="flex items-center gap-1 text-sm font-medium hover:text-blue-500 transition-colors"
+                    >
+                        <Home size={16} /> Root
+                    </button>
+                    {currentContext !== 'root' && (
+                        <>
+                            <ChevronRight size={16} className="text-textMuted" />
+                            <span className="text-sm font-bold">{currentContext}</span>
+                        </>
+                    )}
+                </div>
+
+                <div className="flex items-center gap-1 bg-panel px-2 py-2 rounded-lg border border-border shadow-sm">
+                    <button 
+                        onClick={() => undo()}
+                        disabled={pastStates.length === 0}
+                        className="p-1 rounded text-textMuted hover:text-textMain hover:bg-bg transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+                        title="Undo"
+                    >
+                        <Undo2 size={16} />
+                    </button>
+                    <button 
+                        onClick={() => redo()}
+                        disabled={futureStates.length === 0}
+                        className="p-1 rounded text-textMuted hover:text-textMain hover:bg-bg transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+                        title="Redo"
+                    >
+                        <Redo2 size={16} />
+                    </button>
+                    
+                    <div className="w-[1px] h-4 bg-border mx-1"></div>
+
+                    <button 
+                        onClick={() => setLayoutDirection(layoutDirection === 'TB' ? 'LR' : 'TB')}
+                        className="p-1 rounded text-textMuted hover:text-textMain hover:bg-bg transition-colors flex items-center gap-1 text-xs font-medium"
+                        title="Toggle Layout Direction"
+                    >
+                        <GitMerge size={16} className={layoutDirection === 'LR' ? 'rotate-90' : ''} />
+                        {layoutDirection === 'TB' ? 'Vertical' : 'Horizontal'}
+                    </button>
+                </div>
             </div>
 
             <ReactFlow
@@ -272,6 +309,11 @@ export function Canvas() {
             >
                 <Background color={isDark ? '#374151' : '#9ca3af'} gap={24} />
                 <Controls className="!bg-panel !border-border !fill-textMain" />
+                <MiniMap 
+                    className="!bg-panel !border-border" 
+                    maskColor={isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)'} 
+                    nodeColor={isDark ? '#4b5563' : '#cbd5e1'} 
+                />
             </ReactFlow>
 
             {(inspectedNode || inspectedEdge) && (
@@ -337,5 +379,6 @@ export function Canvas() {
         </div>
     );
 }
+
 
 
