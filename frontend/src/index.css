@@ -28,3 +28,46 @@
         font-family: 'Inter', system-ui, sans-serif;
     }
 }
+
+@layer components {
+    .markdown-tooltip {
+        @apply text-left w-full text-[11px] leading-tight;
+    }
+    .markdown-tooltip h1 {
+        @apply text-sm font-bold mb-1 mt-2 first:mt-0 text-textMain;
+    }
+    .markdown-tooltip h2 {
+        @apply text-xs font-bold mb-1 mt-1 text-textMain;
+    }
+    .markdown-tooltip h3 {
+        @apply text-[11px] font-bold mb-1 mt-1 text-textMain;
+    }
+    .markdown-tooltip p {
+        @apply mb-1 last:mb-0;
+    }
+    .markdown-tooltip blockquote {
+        @apply border-l-2 border-border pl-2 italic text-textMuted my-1 py-0.5 bg-bg rounded-r;
+    }
+    .markdown-tooltip ul {
+        @apply list-disc pl-3 mb-1;
+    }
+    .markdown-tooltip ol {
+        @apply list-decimal pl-3 mb-1;
+    }
+    .markdown-tooltip li {
+        @apply mb-0.5;
+    }
+    .markdown-tooltip a {
+        @apply text-blue-500 hover:underline;
+    }
+    .markdown-tooltip code {
+        @apply bg-bg px-1 py-0.5 rounded text-[10px] text-pink-500 font-mono;
+    }
+    .markdown-tooltip pre {
+        @apply bg-bg p-1.5 rounded-md text-[10px] overflow-x-auto my-1 border border-border;
+    }
+    .markdown-tooltip pre code {
+        @apply bg-transparent p-0 text-textMain;
+    }
+}
+

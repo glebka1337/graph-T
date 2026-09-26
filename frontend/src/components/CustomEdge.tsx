@@ -61,8 +61,8 @@ export const CustomEdge = memo(({
                             {!data.label && !!data.comment && <span className="text-textMuted text-[10px] w-3 h-3 flex items-center justify-center rounded-full bg-border">i</span>}
                             
                             {!!data.comment && (
-                                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 w-48 p-2 bg-panel border border-border rounded-lg shadow-xl text-xs text-textMain whitespace-pre-wrap break-words text-center" style={{ wordBreak: 'break-word' }}>
-                                    <div className="prose prose-xs dark:prose-invert prose-p:leading-tight max-w-none text-left"><ReactMarkdown remarkPlugins={[remarkGfm]}>{data.comment as string}</ReactMarkdown></div>
+                                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 w-56 p-3 bg-panel border border-border rounded-lg shadow-xl text-xs text-textMain whitespace-pre-wrap break-words text-center" style={{ wordBreak: 'break-word' }}>
+                                    <div className="markdown-tooltip"><ReactMarkdown remarkPlugins={[remarkGfm]}>{data.comment as string}</ReactMarkdown></div>
                                     <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-panel border-b border-r border-border rotate-45"></div>
                                 </div>
                             )}
@@ -73,5 +73,6 @@ export const CustomEdge = memo(({
         </>
     );
 });
+
 
 
