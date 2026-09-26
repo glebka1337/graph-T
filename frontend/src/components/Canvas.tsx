@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import { useStore as useZustandStore } from 'zustand';
 import { 
     ReactFlow, 
@@ -73,6 +73,7 @@ export function Canvas() {
 
     const [nodes, setNodes] = useNodesState<Node>([]);
     const [edges, setEdges] = useEdgesState<Edge>([]);
+    const prevContextRef = useRef(currentContext);
 
 
 
@@ -152,26 +153,32 @@ export function Canvas() {
                 layoutDirection
             );
             
-            setNodes(oldNds => {
-                return layoutedNodes.map(newN => {
-                    const old = oldNds.find(o => o.id === newN.id);
-                    if (old) {
-                        newN.selected = old.selected;
-                        newN.position = old.position;
-                    }
-                    return newN;
+            if (prevContextRef.current !== currentContext) {
+                setNodes(layoutedNodes);
+                setEdges(layoutedEdges);
+                prevContextRef.current = currentContext;
+            } else {
+                setNodes(oldNds => {
+                    return layoutedNodes.map(newN => {
+                        const old = oldNds.find(o => o.id === newN.id);
+                        if (old) {
+                            newN.selected = old.selected;
+                            newN.position = old.position;
+                        }
+                        return newN;
+                    });
                 });
-            });
-            
-            setEdges(oldEds => {
-                return layoutedEdges.map(newE => {
-                    const old = oldEds.find(o => o.id === newE.id);
-                    if (old) {
-                        newE.selected = old.selected;
-                    }
-                    return newE;
+                
+                setEdges(oldEds => {
+                    return layoutedEdges.map(newE => {
+                        const old = oldEds.find(o => o.id === newE.id);
+                        if (old) {
+                            newE.selected = old.selected;
+                        }
+                        return newE;
+                    });
                 });
-            });
+            }
         } else {
             setNodes([]);
             setEdges([]);
@@ -453,6 +460,8 @@ export function Canvas() {
         </div>
     );
 }
+
+
 
 
 
