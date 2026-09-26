@@ -21,15 +21,16 @@ import {
 } from '@xyflow/react';
 import dagre from 'dagre';
 import { useStore } from '../store/useStore';
-import { Undo2, Redo2, GitMerge, MousePointer2, Hand, WandSparkles, FileEdit, Eye } from 'lucide-react';
+import { Undo2, Redo2, GitMerge, MousePointer2, Hand, WandSparkles, FileEdit, Eye, StickyNote } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CustomNode } from './CustomNode';
+import { CustomNote } from './CustomNote';
 import { CustomEdge } from './CustomEdge';
 import { ChevronRight, Home, X, Palette, AlignLeft } from 'lucide-react';
 import clsx from 'clsx';
 
-const nodeTypes = { custom: CustomNode };
+const nodeTypes = { custom: CustomNode, note: CustomNote };
 const edgeTypes = { custom: CustomEdge };
 
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
@@ -146,6 +147,17 @@ export function Canvas() {
             flowEdges.push(flowEdge);
         });
 
+        Object.entries(globalNodes).forEach(([id, props]) => {
+            if (props.isNote && props.context === currentContext) {
+                nodesMap.set(id, {
+                    id,
+                    type: 'note',
+                    position: { x: 0, y: 0 },
+                    data: { ...props },
+                });
+            }
+        });
+
         const initialNodes = Array.from(nodesMap.values());
         
         if (initialNodes.length > 0) {
@@ -217,6 +229,16 @@ export function Canvas() {
 
     const onNodesChange = useCallback((changes: NodeChange<Node>[]) => setNodes((nds) => applyNodeChanges(changes, nds) as Node[]), []);
     const onEdgesChange = useCallback((changes: EdgeChange<Edge>[]) => setEdges((eds) => applyEdgeChanges(changes, eds) as Edge[]), []);
+
+    const handleAddNote = () => {
+        const id = 'note_' + Date.now();
+        updateNodeProps(id, {
+            isNote: true,
+            context: currentContext,
+            text: '# New Note\nDouble click to edit.',
+            isCollapsed: false
+        });
+    };
 
     const forceLayout = () => {
         const initialNodes = Array.from(nodes);
@@ -346,6 +368,14 @@ export function Canvas() {
                     <div className="w-[1px] h-4 bg-border mx-1"></div>
 
                     <button 
+                        onClick={handleAddNote}
+                        className="p-1 rounded text-textMuted hover:text-textMain hover:bg-bg transition-colors flex items-center gap-1 text-xs font-medium text-yellow-500 hover:text-yellow-400"
+                        title="Add Markdown Note"
+                    >
+                        <StickyNote size={16} />
+                        Note
+                    </button>
+                    <button 
                         onClick={forceLayout}
                         className="p-1 rounded text-textMuted hover:text-textMain hover:bg-bg transition-colors flex items-center gap-1 text-xs font-medium text-blue-500 hover:text-blue-400"
                         title="Auto Align Graph"
@@ -462,6 +492,11 @@ export function Canvas() {
         </div>
     );
 }
+
+
+
+
+
 
 
 

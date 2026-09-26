@@ -4,7 +4,7 @@ import { temporal } from 'zundo';
 import { GraphEdge } from '../types';
 import Papa from 'papaparse';
 
-export type NodePropsType = { color?: string, description?: string };
+export type NodePropsType = { color?: string, description?: string, isNote?: boolean, context?: string, text?: string, isCollapsed?: boolean };
 export type EdgePropsType = { customColor?: string, description?: string };
 
 interface AppState {
@@ -162,5 +162,6 @@ export const useStore = create<AppState>()(
         limit: 50,
     }
 ));
+
 
 
