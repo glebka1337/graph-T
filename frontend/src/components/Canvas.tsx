@@ -16,11 +16,12 @@ import {
     applyEdgeChanges,
     Position,
     useOnSelectionChange,
-    MiniMap
+    MiniMap,
+    SelectionMode
 } from '@xyflow/react';
 import dagre from 'dagre';
 import { useStore } from '../store/useStore';
-import { Undo2, Redo2, GitMerge } from 'lucide-react';
+import { Undo2, Redo2, GitMerge, MousePointer2, Hand } from 'lucide-react';
 import { CustomNode } from './CustomNode';
 import { CustomEdge } from './CustomEdge';
 import { ChevronRight, Home, X, Palette, AlignLeft } from 'lucide-react';
@@ -202,6 +203,7 @@ export function Canvas() {
     const onEdgesChange = useCallback((changes: EdgeChange<Edge>[]) => setEdges((eds) => applyEdgeChanges(changes, eds) as Edge[]), []);
 
     const [inspectedElement, setInspectedElement] = useState<{type: 'node' | 'edge', id: string} | null>(null);
+    const [isSelectMode, setIsSelectMode] = useState(false);
 
     useOnSelectionChange({
         onChange: ({ nodes: selectedNodes, edges: selectedEdges }) => {
@@ -263,6 +265,23 @@ export function Canvas() {
 
                 <div className="flex items-center gap-1 bg-panel px-2 py-2 rounded-lg border border-border shadow-sm">
                     <button 
+                        onClick={() => setIsSelectMode(false)}
+                        className={clsx("p-1 rounded transition-colors", !isSelectMode ? 'bg-blue-500/10 text-blue-500' : 'text-textMuted hover:text-textMain hover:bg-bg')}
+                        title="Pan Tool (Space + Drag)"
+                    >
+                        <Hand size={16} />
+                    </button>
+                    <button 
+                        onClick={() => setIsSelectMode(true)}
+                        className={clsx("p-1 rounded transition-colors", isSelectMode ? 'bg-blue-500/10 text-blue-500' : 'text-textMuted hover:text-textMain hover:bg-bg')}
+                        title="Select Tool (Shift + Drag)"
+                    >
+                        <MousePointer2 size={16} />
+                    </button>
+                </div>
+
+                <div className="flex items-center gap-1 bg-panel px-2 py-2 rounded-lg border border-border shadow-sm">
+                    <button 
                         onClick={() => undo()}
                         disabled={pastStates.length === 0}
                         className="p-1 rounded text-textMuted hover:text-textMain hover:bg-bg transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
@@ -306,6 +325,9 @@ export function Canvas() {
                 colorMode={isDark ? 'dark' : 'light'}
                 proOptions={{ hideAttribution: true }}
                 nodesDraggable={true}
+                panOnDrag={!isSelectMode}
+                selectionOnDrag={isSelectMode}
+                selectionMode={SelectionMode.Partial}
             >
                 <Background color={isDark ? '#374151' : '#9ca3af'} gap={24} />
                 <Controls className="!bg-panel !border-border !fill-textMain" />
@@ -379,6 +401,7 @@ export function Canvas() {
         </div>
     );
 }
+
 
 
 
