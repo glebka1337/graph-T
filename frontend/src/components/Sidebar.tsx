@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useStore } from '../store/useStore';
+import { AutocompleteInput } from './AutocompleteInput';
 import { Download, Upload, Plus, X, AlignLeft } from 'lucide-react';
 import clsx from 'clsx';
 import { GraphEdge } from '../types';
@@ -80,6 +81,7 @@ Delay, -, ->, Happiness, ,`
     };
 
     const currentTableEdges = globalEdges.filter(e => e.context === currentContext);
+    const allNodes = Array.from(new Set(globalEdges.flatMap(e => [e.source, e.target]).filter(Boolean)));
 
     const updateTableEdge = (index: number, field: keyof GraphEdge, value: string) => {
         const edgesInCtx = [...currentTableEdges];
@@ -186,13 +188,13 @@ Delay, -, ->, Happiness, ,`
                         {currentTableEdges.map((edge, i) => (
                             <div key={i} className="bg-panel border border-border rounded-lg p-3 mb-3 shadow-sm transition-all focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
                                 <div className="flex gap-2 mb-2">
-                                    <input 
-                                        type="text" 
+                                    <AutocompleteInput 
                                         placeholder="Node" 
                                         value={edge.source} 
-                                        onChange={(e) => updateTableEdge(i, 'source', e.target.value)} 
+                                        onChange={(val) => updateTableEdge(i, 'source', val)} 
                                         onKeyDown={(e) => handleKeyDown(e, i)}
-                                        className="flex-1 bg-bg border border-border rounded px-2 py-1.5 text-sm outline-none w-1/3 text-textMain"
+                                        options={allNodes}
+                                        className="bg-bg border border-border rounded px-2 py-1.5 text-sm outline-none text-textMain focus:border-blue-500 transition-colors"
                                     />
                                     <button
                                         onClick={() => updateTableEdge(i, 'dir', edge.dir === '->' ? '<-' : edge.dir === '<-' ? '<->' : edge.dir === '<->' ? '-' : '->')}
@@ -201,13 +203,13 @@ Delay, -, ->, Happiness, ,`
                                     >
                                         {edge.dir === '->' ? '→' : edge.dir === '<-' ? '←' : edge.dir === '<->' ? '↔' : '—'}
                                     </button>
-                                    <input 
-                                        type="text" 
+                                    <AutocompleteInput 
                                         placeholder="To Node (Empty for Desc)" 
                                         value={edge.target} 
-                                        onChange={(e) => updateTableEdge(i, 'target', e.target.value)}
+                                        onChange={(val) => updateTableEdge(i, 'target', val)}
                                         onKeyDown={(e) => handleKeyDown(e, i)}
-                                        className="flex-1 bg-bg border border-border rounded px-2 py-1.5 text-sm outline-none w-1/3 text-textMain"
+                                        options={allNodes}
+                                        className="bg-bg border border-border rounded px-2 py-1.5 text-sm outline-none text-textMain focus:border-blue-500 transition-colors"
                                     />
                                 </div>
                                 <div className="flex gap-2 items-center">
