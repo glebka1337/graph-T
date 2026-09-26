@@ -1,0 +1,9 @@
+services:
+  frontend-prod:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cld-visualizer-prod
+    ports:
+      - "80:80"
+    restart: unless-stopped
