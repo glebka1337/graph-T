@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore } from '../store/useStore';
-import { FileText, Plus, Trash2, Download, Upload } from 'lucide-react';
-import clsx from 'clsx';
+import { Plus, Trash2 } from 'lucide-react';
 
 export function ProjectsPanel() {
-    const { globalEdges, globalNodes, globalEdgeProps, updateGlobalEdges, updateNodeProps, updateEdgeProps } = useStore();
+    const { globalEdges, globalNodes, globalEdgeProps, updateGlobalEdges, } = useStore();
     const [graphs, setGraphs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -109,3 +108,4 @@ export function ProjectsPanel() {
         </div>
     );
 }
+

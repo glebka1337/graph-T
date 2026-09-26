@@ -8,7 +8,7 @@ import { GraphEdge } from '../types';
 
 export function Sidebar() {
     const { globalEdges, currentContext, parseRawText, getRawText, updateGlobalEdges } = useStore();
-    const [mode, setMode] = useState<'text' | 'table'>('text');
+    const [mode, setMode] = useState<'projects' | 'table'>('table');
     const [collapsed, setCollapsed] = useState(false);
     const [width, setWidth] = useState(450);
     const [rawText, setRawText] = useState(
@@ -185,15 +185,7 @@ Delay, -, ->, Happiness, ,`
 
             <div className="flex-1 flex flex-col overflow-hidden relative">
                 {mode === 'projects' && (
-                    <div className="absolute inset-0 flex flex-col p-4 bg-panel">
-                        <p className="text-sm text-textMuted mb-2">Format: <code>Source | Sign | Dir | Target | Label | Comment</code></p>
-                        <textarea 
-                            value={rawText}
-                            onChange={(e) => setRawText(e.target.value)}
-                            className="flex-1 w-full bg-bg border border-border rounded-md p-3 font-mono text-sm resize-none focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-textMain"
-                            spellCheck={false}
-                        />
-                    </div>
+                    <ProjectsPanel />
                 )}
 
                 {mode === 'table' && (
