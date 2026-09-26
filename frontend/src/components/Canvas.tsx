@@ -270,7 +270,7 @@ export function Canvas() {
                 proOptions={{ hideAttribution: true }}
                 nodesDraggable={true}
             >
-                <Background color={isDark ? '#374151' : '#e5e7eb'} gap={24} />
+                <Background color={isDark ? '#374151' : '#9ca3af'} gap={24} />
                 <Controls className="!bg-panel !border-border !fill-textMain" />
             </ReactFlow>
 

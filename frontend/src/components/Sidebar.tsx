@@ -195,17 +195,6 @@ Delay, -, ->, Happiness, ,`
                                         className="flex-1 bg-bg border border-border rounded px-2 py-1.5 text-sm outline-none w-1/3 text-textMain"
                                     />
                                     <button
-                                        onClick={() => updateTableEdge(i, 'sign', edge.sign === '+' ? '-' : edge.sign === '-' ? 'none' : '+')}
-                                        className={clsx("w-8 h-[34px] flex items-center justify-center rounded border font-bold text-sm transition-colors", 
-                                            edge.sign === '+' ? 'bg-plus/10 text-plus border-plus/30' : 
-                                            edge.sign === '-' ? 'bg-minus/10 text-minus border-minus/30' : 
-                                            'bg-bg border-border text-textMuted'
-                                        )}
-                                        title="Sign"
-                                    >
-                                        {edge.sign === 'none' ? ' ' : edge.sign}
-                                    </button>
-                                    <button
                                         onClick={() => updateTableEdge(i, 'dir', edge.dir === '->' ? '<-' : edge.dir === '<-' ? '<->' : edge.dir === '<->' ? '-' : '->')}
                                         className="w-10 h-[34px] flex items-center justify-center rounded border border-border bg-bg text-textMain text-sm font-bold transition-colors hover:border-gray-400"
                                         title="Direction"
