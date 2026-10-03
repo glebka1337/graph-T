@@ -1,5 +1,5 @@
 import { memo, useState, useEffect, useRef } from 'react';
-import { NodeProps } from '@xyflow/react';
+import { NodeProps, NodeResizer } from '@xyflow/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useStore } from '../store/useStore';
@@ -43,12 +43,24 @@ export const CustomNote = memo(({ id, data, selected }: NodeProps) => {
     };
 
     return (
+        <>
+            <NodeResizer 
+                color={color} 
+                isVisible={selected} 
+                minWidth={200} 
+                minHeight={60} 
+                onResizeEnd={(_, params) => {
+                    useStore.getState().updateNodeProps(id, { width: params.width, height: params.height });
+                }}
+            />
         <div 
             className={clsx(
-                "rounded-lg border-2 bg-panel transition-all shadow-sm flex flex-col min-w-[200px] max-w-[400px]",
+                "rounded-lg border-2 bg-panel transition-all shadow-sm flex flex-col min-w-[200px]",
                 selected ? "shadow-md ring-2 ring-offset-2 ring-offset-bg" : "hover:shadow-md"
             )}
             style={{ 
+                width: typedData.width,
+                height: typedData.height,
                 borderColor: color, 
                 '--tw-ring-color': color 
             } as React.CSSProperties}
@@ -98,19 +110,19 @@ export const CustomNote = memo(({ id, data, selected }: NodeProps) => {
             </div>
             
             {!typedData.isCollapsed && (
-                <div className="p-3 text-textMain text-sm custom-markdown cursor-text nodrag" onDoubleClick={(e) => e.stopPropagation()}>
+                <div className="p-3 text-textMain text-sm custom-markdown cursor-text nodrag flex-1 flex flex-col h-full min-h-0" onDoubleClick={(e) => e.stopPropagation()}>
                     {isEditing ? (
                         <textarea
                             value={localText}
                             onChange={(e) => setLocalText(e.target.value)}
                             onBlur={saveEdit}
                             autoFocus
-                            className="w-full min-h-[100px] bg-bg border border-border rounded p-2 outline-none resize-y text-textMain"
+                            className="w-full h-full min-h-[100px] flex-1 bg-bg border border-border rounded p-2 outline-none resize-none text-textMain"
                             style={{ '--tw-ring-color': color, '&:focus': { borderColor: color } } as any}
                             placeholder="Write markdown here..."
                         />
                     ) : (
-                        <div className="markdown-tooltip overflow-y-auto max-h-[300px]" onDoubleClick={() => setIsEditing(true)}>
+                        <div className="markdown-tooltip overflow-y-auto h-full flex-1" onDoubleClick={() => setIsEditing(true)}>
                             {typedData.text ? (
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{typedData.text}</ReactMarkdown>
                             ) : (
@@ -121,5 +133,8 @@ export const CustomNote = memo(({ id, data, selected }: NodeProps) => {
                 </div>
             )}
         </div>
+        </>
     );
 });
+
+

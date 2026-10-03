@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
+import { Handle, Position, NodeProps, NodeResizer } from '@xyflow/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Layers } from 'lucide-react';
@@ -16,9 +16,23 @@ export const CustomNode = memo(({ id, data, selected }: NodeProps) => {
     };
 
     return (
-        <div 
-            onDoubleClick={onDoubleClick}
-            style={typedData.color ? { borderColor: typedData.color } : {}}
+        <>
+            <NodeResizer 
+                color={typedData.color || '#3b82f6'} 
+                isVisible={selected} 
+                minWidth={100} 
+                minHeight={40} 
+                onResizeEnd={(_, params) => {
+                    useStore.getState().updateNodeProps(id, { width: params.width, height: params.height });
+                }}
+            />
+            <div 
+                onDoubleClick={onDoubleClick}
+                style={{
+                    borderColor: typedData.color || undefined,
+                    width: typedData.width,
+                    height: typedData.height
+                }}
             className={clsx(
                 "px-4 py-2 rounded-lg border-2 bg-panel transition-all shadow-sm flex items-center gap-2",
                 selected ? "border-blue-500 shadow-md ring-2 ring-blue-500/20" : (!typedData.color && "border-border hover:border-gray-400"),
@@ -54,8 +68,10 @@ export const CustomNode = memo(({ id, data, selected }: NodeProps) => {
             
             <Handle type="source" position={Position.Bottom} className="opacity-0 w-0 h-0 absolute top-1/2 left-1/2 pointer-events-none" />
         </div>
+        </>
     );
 });
+
 
 
 
