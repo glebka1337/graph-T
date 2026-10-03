@@ -55,7 +55,7 @@ export const CustomNote = memo(({ id, data, selected }: NodeProps) => {
             />
         <div 
             className={clsx(
-                "rounded-lg border-2 bg-panel transition-all shadow-sm flex flex-col min-w-[200px]",
+                "rounded-lg border-2 bg-panel transition-all shadow-sm flex flex-col min-w-[200px] overflow-hidden",
                 selected ? "shadow-md ring-2 ring-offset-2 ring-offset-bg" : "hover:shadow-md"
             )}
             style={{ 
@@ -117,7 +117,7 @@ export const CustomNote = memo(({ id, data, selected }: NodeProps) => {
                             onChange={(e) => setLocalText(e.target.value)}
                             onBlur={saveEdit}
                             autoFocus
-                            className="w-full h-full min-h-[100px] flex-1 bg-bg border border-border rounded p-2 outline-none resize-none text-textMain"
+                            className="w-full h-full flex-1 bg-bg border border-border rounded p-2 outline-none resize-none text-textMain"
                             style={{ '--tw-ring-color': color, '&:focus': { borderColor: color } } as any}
                             placeholder="Write markdown here..."
                         />
@@ -136,5 +136,6 @@ export const CustomNote = memo(({ id, data, selected }: NodeProps) => {
         </>
     );
 });
+
 
 

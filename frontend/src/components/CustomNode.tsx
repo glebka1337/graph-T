@@ -34,7 +34,7 @@ export const CustomNode = memo(({ id, data, selected }: NodeProps) => {
                     height: typedData.height
                 }}
             className={clsx(
-                "px-4 py-2 rounded-lg border-2 bg-panel transition-all shadow-sm flex items-center gap-2",
+                "px-4 py-2 rounded-lg border-2 bg-panel transition-all shadow-sm flex items-center justify-center gap-2",
                 selected ? "border-blue-500 shadow-md ring-2 ring-blue-500/20" : (!typedData.color && "border-border hover:border-gray-400"),
                 typedData.opacity < 1 ? "opacity-30" : "opacity-100"
             )}
@@ -43,7 +43,7 @@ export const CustomNode = memo(({ id, data, selected }: NodeProps) => {
             
             <div className="flex flex-col gap-1 items-center justify-center">
                 <div className="flex items-center gap-1.5">
-                    <span className="text-textMain font-medium font-sans text-sm">
+                    <span className="text-textMain font-medium font-sans text-sm text-center break-words">
                         {typedData.label as string}
                     </span>
                     {typedData.description && (
@@ -71,6 +71,8 @@ export const CustomNode = memo(({ id, data, selected }: NodeProps) => {
         </>
     );
 });
+
+
 
 
 
